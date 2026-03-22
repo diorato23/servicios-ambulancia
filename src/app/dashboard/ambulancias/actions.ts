@@ -3,7 +3,7 @@
 import { db } from "@/lib/firebase";
 import {
   collection,
-  addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   doc,
@@ -40,16 +40,24 @@ function buildAmbulanciaData(formData: FormData): AmbulanciaData {
   };
 }
 
-export async function verificarPlacaDuplicada(
+/** Consulta com timeout de 3s — se offline retorna "não existe" para não travar */
+async function verificarPlacaDuplicada(
   placa: string,
   excludeId?: string
 ): Promise<{ existe: boolean }> {
-  const q = query(collection(db, "ambulancias"), where("placa", "==", placa.toUpperCase()));
-  const snap = await getDocs(q);
-  for (const d of snap.docs) {
-    if (d.id !== excludeId) return { existe: true };
+  try {
+    const q = query(collection(db, "ambulancias"), where("placa", "==", placa.toUpperCase()));
+    const snapPromise = getDocs(q);
+    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000));
+    const result = await Promise.race([snapPromise, timeoutPromise]);
+    if (!result) return { existe: false }; // timeout → assume offline, deixa salvar
+    for (const d of result.docs) {
+      if (d.id !== excludeId) return { existe: true };
+    }
+    return { existe: false };
+  } catch {
+    return { existe: false }; // qualquer erro offline → deixa salvar
   }
-  return { existe: false };
 }
 
 export async function crearAmbulancia(
@@ -58,13 +66,15 @@ export async function crearAmbulancia(
   try {
     const data = buildAmbulanciaData(formData);
     if (!data.placa) return { error: "La placa es obligatoria." };
+
     const dup = await verificarPlacaDuplicada(data.placa);
     if (dup.existe) return { error: `Ya existe una ambulancia con la placa ${data.placa}.` };
-    const docRef = await addDoc(collection(db, "ambulancias"), {
-      ...data,
-      fechaRegistro: serverTimestamp(),
-    });
-    return { id: docRef.id };
+
+    // Gerar ID no cliente — funciona offline
+    const newRef = doc(collection(db, "ambulancias"));
+    // Fire-and-forget: não aguarda confirmação do servidor
+    setDoc(newRef, { ...data, fechaRegistro: serverTimestamp() });
+    return { id: newRef.id };
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
     return { error: `Error al crear: ${msg}` };
@@ -79,10 +89,8 @@ export async function actualizarAmbulancia(
     const data = buildAmbulanciaData(formData);
     const dup = await verificarPlacaDuplicada(data.placa, id);
     if (dup.existe) return { error: `Ya existe otra ambulancia con la placa ${data.placa}.` };
-    await updateDoc(doc(db, "ambulancias", id), {
-      ...data,
-      fechaActualizacion: serverTimestamp(),
-    });
+    // Fire-and-forget
+    updateDoc(doc(db, "ambulancias", id), { ...data, fechaActualizacion: serverTimestamp() });
     return {};
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -95,7 +103,7 @@ export async function actualizarEstadoAmbulancia(
   nuevoEstado: string
 ): Promise<{ error?: string }> {
   try {
-    await updateDoc(doc(db, "ambulancias", id), {
+    updateDoc(doc(db, "ambulancias", id), {
       estado: nuevoEstado,
       fechaActualizacion: serverTimestamp(),
     });
@@ -108,7 +116,7 @@ export async function actualizarEstadoAmbulancia(
 
 export async function eliminarAmbulancia(id: string): Promise<{ error?: string }> {
   try {
-    await deleteDoc(doc(db, "ambulancias", id));
+    deleteDoc(doc(db, "ambulancias", id));
     return {};
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);

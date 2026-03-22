@@ -3,7 +3,7 @@
 import { db } from "@/lib/firebase";
 import {
   collection,
-  addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   doc,
@@ -35,7 +35,6 @@ export interface PacienteData {
 }
 
 function buildPacienteData(formData: FormData): PacienteData {
-  // Firestore NO acepta undefined — campos vacíos deben ser "" (string vacía)
   const get = (k: string) => (formData.get(k) as string)?.trim() || "";
   return {
     tipoDocumento: formData.get("tipo_documento") as string,
@@ -59,27 +58,32 @@ function buildPacienteData(formData: FormData): PacienteData {
   };
 }
 
-export async function verificarDocumentoDuplicado(
+/** Consulta com timeout — se offline, assume duplicado não existe */
+async function verificarDocumentoDuplicado(
   tipoDocumento: string,
   numeroDocumento: string,
   excludeId?: string
 ): Promise<{ existe: boolean; nombre?: string }> {
-  const q = query(
-    collection(db, "pacientes"),
-    where("tipoDocumento", "==", tipoDocumento),
-    where("numeroDocumento", "==", numeroDocumento)
-  );
-  const snap = await getDocs(q);
-  for (const d of snap.docs) {
-    if (d.id !== excludeId) {
-      const data = d.data();
-      return {
-        existe: true,
-        nombre: `${data.primerNombre} ${data.primerApellido}`,
-      };
+  try {
+    const q = query(
+      collection(db, "pacientes"),
+      where("tipoDocumento", "==", tipoDocumento),
+      where("numeroDocumento", "==", numeroDocumento)
+    );
+    const snapPromise = getDocs(q);
+    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000));
+    const result = await Promise.race([snapPromise, timeoutPromise]);
+    if (!result) return { existe: false }; // offline timeout
+    for (const d of result.docs) {
+      if (d.id !== excludeId) {
+        const data = d.data();
+        return { existe: true, nombre: `${data.primerNombre} ${data.primerApellido}` };
+      }
     }
+    return { existe: false };
+  } catch {
+    return { existe: false };
   }
-  return { existe: false };
 }
 
 export async function crearPaciente(
@@ -87,20 +91,13 @@ export async function crearPaciente(
 ): Promise<{ error?: string; id?: string }> {
   try {
     const data = buildPacienteData(formData);
-    const dup = await verificarDocumentoDuplicado(
-      data.tipoDocumento,
-      data.numeroDocumento
-    );
+    const dup = await verificarDocumentoDuplicado(data.tipoDocumento, data.numeroDocumento);
     if (dup.existe) {
-      return {
-        error: `Ya existe un paciente con ese documento: ${dup.nombre}. Verifique los datos o búsquelo en la lista.`,
-      };
+      return { error: `Ya existe un paciente con ese documento: ${dup.nombre}.` };
     }
-    const docRef = await addDoc(collection(db, "pacientes"), {
-      ...data,
-      fechaRegistro: serverTimestamp(),
-    });
-    return { id: docRef.id };
+    const newRef = doc(collection(db, "pacientes"));
+    setDoc(newRef, { ...data, fechaRegistro: serverTimestamp() });
+    return { id: newRef.id };
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
     return { error: `Error al guardar: ${msg}` };
@@ -113,20 +110,11 @@ export async function actualizarPaciente(
 ): Promise<{ error?: string }> {
   try {
     const data = buildPacienteData(formData);
-    const dup = await verificarDocumentoDuplicado(
-      data.tipoDocumento,
-      data.numeroDocumento,
-      id
-    );
+    const dup = await verificarDocumentoDuplicado(data.tipoDocumento, data.numeroDocumento, id);
     if (dup.existe) {
-      return {
-        error: `Ya existe otro paciente con ese documento: ${dup.nombre}.`,
-      };
+      return { error: `Ya existe otro paciente con ese documento: ${dup.nombre}.` };
     }
-    await updateDoc(doc(db, "pacientes", id), {
-      ...data,
-      fechaActualizacion: serverTimestamp(),
-    });
+    updateDoc(doc(db, "pacientes", id), { ...data, fechaActualizacion: serverTimestamp() });
     return {};
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -136,7 +124,7 @@ export async function actualizarPaciente(
 
 export async function eliminarPaciente(id: string): Promise<{ error?: string }> {
   try {
-    await deleteDoc(doc(db, "pacientes", id));
+    deleteDoc(doc(db, "pacientes", id));
     return {};
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);

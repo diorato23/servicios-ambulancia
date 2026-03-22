@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/firebase";
 import {
-  collection, addDoc, updateDoc, deleteDoc, doc, serverTimestamp,
+  collection, setDoc, updateDoc, deleteDoc, doc, serverTimestamp,
 } from "firebase/firestore";
 
 export interface SignosVitales {
@@ -83,11 +83,9 @@ export async function crearHistoriaClinica(formData: FormData): Promise<{ error?
     const data = buildHistoriaData(formData);
     if (!data.idPaciente) return { error: "Debe seleccionar un paciente." };
     if (!data.motivoConsulta) return { error: "El motivo de consulta es obligatorio." };
-    const docRef = await addDoc(collection(db, "historias_clinicas"), {
-      ...data,
-      fechaRegistro: serverTimestamp(),
-    });
-    return { id: docRef.id };
+    const newRef = doc(collection(db, "historias_clinicas"));
+    setDoc(newRef, { ...data, fechaRegistro: serverTimestamp() });
+    return { id: newRef.id };
   } catch (e: unknown) {
     return { error: `Error al crear: ${e instanceof Error ? e.message : String(e)}` };
   }
@@ -96,10 +94,7 @@ export async function crearHistoriaClinica(formData: FormData): Promise<{ error?
 export async function actualizarHistoriaClinica(id: string, formData: FormData): Promise<{ error?: string }> {
   try {
     const data = buildHistoriaData(formData);
-    await updateDoc(doc(db, "historias_clinicas", id), {
-      ...data,
-      fechaActualizacion: serverTimestamp(),
-    });
+    updateDoc(doc(db, "historias_clinicas", id), { ...data, fechaActualizacion: serverTimestamp() });
     return {};
   } catch (e: unknown) {
     return { error: `Error al actualizar: ${e instanceof Error ? e.message : String(e)}` };
@@ -108,7 +103,7 @@ export async function actualizarHistoriaClinica(id: string, formData: FormData):
 
 export async function eliminarHistoriaClinica(id: string): Promise<{ error?: string }> {
   try {
-    await deleteDoc(doc(db, "historias_clinicas", id));
+    deleteDoc(doc(db, "historias_clinicas", id));
     return {};
   } catch (e: unknown) {
     return { error: `Error al eliminar: ${e instanceof Error ? e.message : String(e)}` };

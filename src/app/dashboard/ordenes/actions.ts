@@ -3,7 +3,7 @@
 import { db } from "@/lib/firebase";
 import {
   collection,
-  addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   doc,
@@ -57,11 +57,9 @@ export async function crearOrden(
     if (!data.idPaciente) {
       return { error: "Debe seleccionar un paciente para la orden." };
     }
-    const docRef = await addDoc(collection(db, "ordenes_servicio"), {
-      ...data,
-      fechaRegistro: serverTimestamp(),
-    });
-    return { id: docRef.id };
+    const newRef = doc(collection(db, "ordenes_servicio"));
+    setDoc(newRef, { ...data, fechaRegistro: serverTimestamp() });
+    return { id: newRef.id };
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
     return { error: `Error al crear la orden: ${msg}` };
@@ -74,10 +72,7 @@ export async function actualizarOrden(
 ): Promise<{ error?: string }> {
   try {
     const data = buildOrdenData(formData);
-    await updateDoc(doc(db, "ordenes_servicio", id), {
-      ...data,
-      fechaActualizacion: serverTimestamp(),
-    });
+    updateDoc(doc(db, "ordenes_servicio", id), { ...data, fechaActualizacion: serverTimestamp() });
     return {};
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -90,7 +85,7 @@ export async function actualizarEstadoOrden(
   nuevoEstado: string
 ): Promise<{ error?: string }> {
   try {
-    await updateDoc(doc(db, "ordenes_servicio", id), {
+    updateDoc(doc(db, "ordenes_servicio", id), {
       estadoOS: nuevoEstado,
       fechaActualizacion: serverTimestamp(),
     });
@@ -103,7 +98,7 @@ export async function actualizarEstadoOrden(
 
 export async function eliminarOrden(id: string): Promise<{ error?: string }> {
   try {
-    await deleteDoc(doc(db, "ordenes_servicio", id));
+    deleteDoc(doc(db, "ordenes_servicio", id));
     return {};
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
