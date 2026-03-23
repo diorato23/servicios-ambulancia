@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   sendPasswordResetEmail,
   updateProfile,
 } from "firebase/auth";
@@ -22,6 +23,23 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  // Capturar resultado do redirect do Google após retorno
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          router.push("/dashboard");
+        }
+      })
+      .catch((err) => {
+        const firebaseErr = err as { code?: string };
+        if (firebaseErr.code) {
+          setError(getFirebaseErrorMessage(firebaseErr.code));
+        }
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Login fields
   const [email, setEmail] = useState("");
@@ -123,12 +141,11 @@ export default function LoginForm() {
     setLoading(true);
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      router.push("/dashboard");
+      await signInWithRedirect(auth, provider);
+      // O redirect vai sair da página — o resultado é capturado no useEffect
     } catch (err: unknown) {
       const firebaseErr = err as { code?: string };
       setError(getFirebaseErrorMessage(firebaseErr.code || ""));
-    } finally {
       setLoading(false);
     }
   };
