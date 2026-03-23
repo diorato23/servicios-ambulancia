@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Manual del Sistema — Servicios de Ambulancia</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    @page { size: A4; margin: 2cm; }
+    body {
+      font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+      color: #1a1a2e;
+      line-height: 1.7;
+      font-size: 13px;
+      background: #fff;
+    }
+    .cover {
+      text-align: center;
+      padding: 120px 40px 60px;
+      page-break-after: always;
+    }
+    .cover h1 {
+      font-size: 32px;
+      color: #1e3a5f;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+    .cover .subtitle {
+      font-size: 18px;
+      color: #4a6fa5;
+      margin-bottom: 40px;
+    }
+    .cover .badge {
+      display: inline-block;
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 8px 24px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 40px;
+    }
+    .cover .info {
+      font-size: 12px;
+      color: #888;
+      margin-top: 60px;
+    }
+    h2 {
+      font-size: 20px;
+      color: #1e3a5f;
+      border-bottom: 3px solid #4a6fa5;
+      padding-bottom: 8px;
+      margin: 30px 0 16px;
+    }
+    h3 {
+      font-size: 15px;
+      color: #2c5282;
+      margin: 20px 0 10px;
+    }
+    p { margin-bottom: 10px; }
+    .section { margin-bottom: 24px; }
+    .highlight {
+      background: #f0f7ff;
+      border-left: 4px solid #4a6fa5;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+      font-size: 12.5px;
+    }
+    .warning {
+      background: #fff8e1;
+      border-left: 4px solid #f9a825;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+      font-size: 12.5px;
+    }
+    .danger {
+      background: #fce4ec;
+      border-left: 4px solid #c62828;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+      font-size: 12.5px;
+    }
+    .success {
+      background: #e8f5e9;
+      border-left: 4px solid #2e7d32;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+      font-size: 12.5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 12px;
+    }
+    th {
+      background: #1e3a5f;
+      color: #fff;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+    }
+    td {
+      padding: 9px 14px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    tr:nth-child(even) td { background: #f8fafc; }
+    ul, ol { margin: 8px 0 14px 24px; }
+    li { margin-bottom: 5px; }
+    .footer {
+      text-align: center;
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 40px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+    }
+    .page-break { page-break-before: always; }
+    .badge-inline {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-green { background: #e8f5e9; color: #2e7d32; }
+    .badge-red { background: #fce4ec; color: #c62828; }
+    .badge-blue { background: #e3f2fd; color: #1565c0; }
+    .badge-orange { background: #fff3e0; color: #e65100; }
+  </style>
+</head>
+<body>
+
+  <!-- PORTADA -->
+  <div class="cover">
+    <div style="font-size: 60px; margin-bottom: 20px;">🏥</div>
+    <h1>Sistema de Gestión<br>Servicios de Ambulancia</h1>
+    <div class="subtitle">Manual de Funcionamiento del Sistema</div>
+    <div class="badge">✅ Conforme con Resolución 1995 de 1999</div>
+    <div class="info">
+      <p><strong>Empresa:</strong> M&H Partner Solutions S.A.S</p>
+      <p><strong>Versión:</strong> 1.0 — Marzo 2026</p>
+      <p><strong>Clasificación:</strong> Documento interno</p>
+    </div>
+  </div>
+
+  <!-- ÍNDICE -->
+  <h2>Índice</h2>
+  <ol style="font-size: 14px; line-height: 2.2;">
+    <li>Registro de Pacientes</li>
+    <li>Historias Clínicas APH — Inmutabilidad</li>
+    <li>Notas Aclaratorias — Correcciones Legales</li>
+    <li>Protección de Datos y Auditoría</li>
+    <li>Funcionamiento Offline</li>
+    <li>Seguridad del Sistema</li>
+    <li>Módulos Operativos (Ambulancias, Tripulantes, Órdenes)</li>
+    <li>Preguntas Frecuentes</li>
+  </ol>
+
+  <div class="page-break"></div>
+
+  <!-- 1. PACIENTES -->
+  <h2>1. Registro de Pacientes</h2>
+  <div class="section">
+    <h3>1.1 Registro Único</h3>
+    <p>Cada paciente se identifica de forma única por su <strong>Tipo de Documento</strong> + <strong>Número de Documento</strong> (ej: CC 1098765432). El sistema impide la creación de pacientes duplicados.</p>
+    <p>Si se intenta registrar un paciente con un documento ya existente, el sistema muestra un mensaje de error indicando el nombre del paciente registrado previamente.</p>
+
+    <h3>1.2 Datos Registrados</h3>
+    <table>
+      <tr><th>Campo</th><th>Obligatorio</th><th>Descripción</th></tr>
+      <tr><td>Tipo de Documento</td><td>Sí</td><td>CC, TI, RC, CE, PA, PE, NIT</td></tr>
+      <tr><td>Número de Documento</td><td>Sí</td><td>Identificación única</td></tr>
+      <tr><td>Nombre Completo</td><td>Sí</td><td>Primer y segundo nombre, primer y segundo apellido</td></tr>
+      <tr><td>Fecha de Nacimiento</td><td>Sí</td><td>Para cálculo automático de edad</td></tr>
+      <tr><td>Sexo</td><td>Sí</td><td>Masculino, Femenino, Otro</td></tr>
+      <tr><td>Teléfono / Correo</td><td>No</td><td>Datos de contacto</td></tr>
+      <tr><td>Municipio / Dirección</td><td>No</td><td>Ubicación del paciente</td></tr>
+      <tr><td>Tipo de Afiliación</td><td>No</td><td>Contributivo, Subsidiado, Vinculado, Particular, Especial</td></tr>
+      <tr><td>EPS</td><td>No</td><td>Nueva EPS, Sanitas, Sura, Salud Total, etc.</td></tr>
+      <tr><td>Alergias</td><td>No</td><td>Alergias conocidas (resaltadas en rojo)</td></tr>
+      <tr><td>Antecedentes Clínicos</td><td>No</td><td>Enfermedades previas, cirugías, medicamentos</td></tr>
+      <tr><td>Contacto de Emergencia</td><td>No</td><td>Nombre y teléfono del contacto</td></tr>
+    </table>
+
+    <h3>1.3 Protección de Datos del Paciente</h3>
+    <div class="danger">
+      <strong>⛔ PROHIBIDO:</strong> Los datos del paciente <strong>no se pueden eliminar ni editar directamente</strong>. El tipo y número de documento son inmodificables. Las correcciones se realizan exclusivamente mediante <strong>Notas Aclaratorias</strong> (ver sección 3).
+    </div>
+
+    <h3>1.4 Ficha del Paciente</h3>
+    <p>Al consultar un paciente, el sistema muestra:</p>
+    <ul>
+      <li>Todos sus datos personales y de salud</li>
+      <li>Cantidad total de <strong>Historias Clínicas</strong> registradas</li>
+      <li>Cantidad total de <strong>Órdenes de Servicio</strong> asociadas</li>
+      <li>Indicador <span class="badge-inline badge-green">🛡️ Registro protegido</span></li>
+    </ul>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- 2. HISTORIAS CLÍNICAS -->
+  <h2>2. Historias Clínicas APH — Inmutabilidad</h2>
+  <div class="section">
+    <h3>2.1 Marco Legal</h3>
+    <div class="highlight">
+      <strong>Resolución 1995 de 1999 — Ministerio de Salud de Colombia:</strong><br>
+      La historia clínica es un documento <strong>privado, obligatorio e inmodificable</strong>. Todo profesional que intervenga en la atención del paciente tiene la obligación de registrarla y conservarla. No se permite la alteración, destrucción ni eliminación de los registros.
+    </div>
+
+    <h3>2.2 Funcionamiento en el Sistema</h3>
+    <p>Cada atención prehospitalaria genera una <strong>nueva historia clínica</strong> vinculada al paciente. Las historias se <strong>acumulan</strong> — un mismo paciente puede tener múltiples registros a lo largo del tiempo.</p>
+
+    <div class="danger">
+      <strong>⛔ PROHIBIDO:</strong><br>
+      • Editar una historia clínica existente<br>
+      • Eliminar una historia clínica<br>
+      • Modificar cualquier campo después de guardar<br>
+      El sistema no tiene botones de editar ni eliminar para historias clínicas.
+    </div>
+
+    <h3>2.3 Campos de la Historia Clínica APH</h3>
+    <table>
+      <tr><th>Sección</th><th>Campos</th></tr>
+      <tr><td>Paciente</td><td>Vinculación automática con el registro del paciente</td></tr>
+      <tr><td>Tiempos</td><td>Llegada a escena, inicio de atención, cierre</td></tr>
+      <tr><td>Consulta</td><td>Motivo, enfermedad actual, antecedentes, examen físico</td></tr>
+      <tr><td>Signos Vitales</td><td>P/A, FC, FR, Temperatura, SpO₂, Glucometría</td></tr>
+      <tr><td>Glasgow</td><td>Ocular (1-4), Verbal (1-5), Motor (1-6) = Total /15</td></tr>
+      <tr><td>Clasificación</td><td>Triage (I-V), Diagnóstico presuntivo</td></tr>
+      <tr><td>Tratamiento</td><td>Procedimientos, medicamentos, notas de evolución</td></tr>
+      <tr><td>Cierre</td><td>Firma del responsable, orden de servicio vinculada</td></tr>
+    </table>
+
+    <h3>2.4 Visualización</h3>
+    <p>Cada historia clínica muestra el indicador <span class="badge-inline badge-green">🛡️ Registro inmutable</span> confirmando que el registro no puede ser modificado.</p>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- 3. NOTAS ACLARATORIAS -->
+  <h2>3. Notas Aclaratorias — Correcciones Legales</h2>
+  <div class="section">
+    <h3>3.1 ¿Qué son?</h3>
+    <p>Las notas aclaratorias son el <strong>único mecanismo legal</strong> para corregir errores en una historia clínica ya registrada, conforme a la Resolución 1995/99.</p>
+    <p><strong>No se modifica el registro original.</strong> En su lugar, se crea un documento adicional que aclara el error.</p>
+
+    <h3>3.2 Contenido de una Nota Aclaratoria</h3>
+    <table>
+      <tr><th>Campo</th><th>Descripción</th></tr>
+      <tr><td>Historia Clínica</td><td>ID de la HC a la que se refiere la corrección</td></tr>
+      <tr><td>Motivo</td><td>Razón de la corrección</td></tr>
+      <tr><td>Campo Afectado</td><td>Qué campo contiene el error</td></tr>
+      <tr><td>Valor Anterior</td><td>El dato erróneo original</td></tr>
+      <tr><td>Valor Correcto</td><td>El dato correcto</td></tr>
+      <tr><td>Médico Responsable</td><td>Nombre del profesional que autoriza la corrección</td></tr>
+      <tr><td>Fecha y Hora</td><td>Registrada automáticamente por el sistema</td></tr>
+    </table>
+
+    <div class="warning">
+      <strong>⚠️ Importante:</strong> Solo profesionales con rol de <strong>Médico</strong> pueden crear notas aclaratorias. Las notas también son <strong>inmutables</strong> — una vez creadas, no se pueden editar ni eliminar.
+    </div>
+
+    <h3>3.3 Ejemplo Práctico</h3>
+    <div class="highlight">
+      <strong>Situación:</strong> Se registró al paciente con Triage "III" pero debía ser "II".<br><br>
+      <strong>Solución:</strong> Se crea una Nota Aclaratoria:<br>
+      • Campo: Triage<br>
+      • Valor anterior: III — Urgencia<br>
+      • Valor correcto: II — Emergencia<br>
+      • Motivo: Error de clasificación al momento del registro<br>
+      • Médico: Dr. Carlos Ramírez
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- 4. AUDITORÍA -->
+  <h2>4. Protección de Datos y Auditoría</h2>
+  <div class="section">
+    <h3>4.1 Registro de Auditoría</h3>
+    <p>Toda modificación realizada en los datos de un paciente genera un <strong>log de auditoría</strong> inmutable que registra:</p>
+    <ul>
+      <li>Qué campo fue modificado</li>
+      <li>Cuál era el valor anterior</li>
+      <li>Cuál es el nuevo valor</li>
+      <li>Quién realizó el cambio</li>
+      <li>Fecha y hora exacta</li>
+    </ul>
+
+    <h3>4.2 Ante una Auditoría Gubernamental</h3>
+    <div class="success">
+      <strong>✅ El sistema permite:</strong><br>
+      1. Buscar al paciente por su número de documento<br>
+      2. Ver todos sus datos desde el primer registro<br>
+      3. Consultar <strong>todas</strong> las historias clínicas de todos los atendimientos (acumulativas)<br>
+      4. Ver las notas aclaratorias vinculadas a cada historia<br>
+      5. Revisar el log de auditoría con todas las modificaciones<br><br>
+      <strong>Nada se pierde. Todo queda registrado permanentemente.</strong>
+    </div>
+
+    <h3>4.3 Reglas de Seguridad del Banco de Datos</h3>
+    <table>
+      <tr><th>Colección</th><th>Crear</th><th>Leer</th><th>Editar</th><th>Eliminar</th></tr>
+      <tr><td>Historias Clínicas</td><td><span class="badge-inline badge-green">✅</span></td><td><span class="badge-inline badge-green">✅</span></td><td><span class="badge-inline badge-red">❌</span></td><td><span class="badge-inline badge-red">❌</span></td></tr>
+      <tr><td>Notas Aclaratorias</td><td><span class="badge-inline badge-green">✅</span></td><td><span class="badge-inline badge-green">✅</span></td><td><span class="badge-inline badge-red">❌</span></td><td><span class="badge-inline badge-red">❌</span></td></tr>
+      <tr><td>Auditoría de Pacientes</td><td><span class="badge-inline badge-green">✅</span></td><td><span class="badge-inline badge-green">✅</span></td><td><span class="badge-inline badge-red">❌</span></td><td><span class="badge-inline badge-red">❌</span></td></tr>
+      <tr><td>Pacientes</td><td><span class="badge-inline badge-green">✅</span></td><td><span class="badge-inline badge-green">✅</span></td><td><span class="badge-inline badge-orange">⚠️*</span></td><td><span class="badge-inline badge-red">❌</span></td></tr>
+    </table>
+    <p style="font-size: 11px; color: #888;">* Los pacientes pueden actualizarse, pero el tipo y número de documento no se pueden cambiar.</p>
+  </div>
+
+  <!-- 5. OFFLINE -->
+  <h2>5. Funcionamiento Offline</h2>
+  <div class="section">
+    <p>El sistema está diseñado para operar en <strong>condiciones de conectividad limitada</strong>, ideal para ambulancias en zonas rurales o con señal inestable.</p>
+
+    <h3>5.1 ¿Cómo funciona?</h3>
+    <ul>
+      <li>Los datos se almacenan en <strong>caché local</strong> del dispositivo</li>
+      <li>Si no hay internet, el usuario puede seguir <strong>registrando pacientes e historias clínicas</strong></li>
+      <li>Cuando se recupera la conexión, todo se <strong>sincroniza automáticamente</strong> con el servidor</li>
+      <li>El sistema muestra un indicador <span class="badge-inline badge-orange">📴 Sin conexión</span> cuando está offline</li>
+    </ul>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- 6. SEGURIDAD -->
+  <h2>6. Seguridad del Sistema</h2>
+  <div class="section">
+    <h3>6.1 Autenticación</h3>
+    <ul>
+      <li>Acceso solo para usuarios <strong>autenticados</strong></li>
+      <li>Inicio de sesión con <strong>correo/contraseña</strong> o <strong>Google</strong></li>
+      <li>Sesión protegida con tokens JWT</li>
+    </ul>
+
+    <h3>6.2 Protección a Nivel de Base de Datos</h3>
+    <p>Las reglas de seguridad se aplican directamente en <strong>Firebase/Firestore</strong>, lo que significa que incluso si alguien intentara acceder al banco de datos directamente (sin la aplicación), las restricciones de inmutabilidad y eliminación se mantienen.</p>
+  </div>
+
+  <!-- 7. MÓDULOS -->
+  <h2>7. Módulos Operativos</h2>
+  <div class="section">
+    <table>
+      <tr><th>Módulo</th><th>Crear</th><th>Editar</th><th>Eliminar</th><th>Descripción</th></tr>
+      <tr><td>🚑 Ambulancias</td><td>✅</td><td>✅</td><td>✅</td><td>Placa, tipo, estado, dotación</td></tr>
+      <tr><td>👨‍⚕️ Tripulantes</td><td>✅</td><td>✅</td><td>✅</td><td>Médicos, enfermeros, conductores</td></tr>
+      <tr><td>📋 Órdenes de Servicio</td><td>✅</td><td>✅</td><td>✅</td><td>Solicitudes de atención</td></tr>
+      <tr><td>🧑‍🤝‍🧑 Pacientes</td><td>✅</td><td>❌</td><td>❌</td><td>Solo registro y consulta</td></tr>
+      <tr><td>📄 Historias Clínicas</td><td>✅</td><td>❌</td><td>❌</td><td>Solo registro y consulta</td></tr>
+    </table>
+  </div>
+
+  <!-- 8. FAQ -->
+  <h2>8. Preguntas Frecuentes</h2>
+  <div class="section">
+    <h3>¿Se puede eliminar un paciente?</h3>
+    <p><strong>No.</strong> Los datos del paciente son permanentes. Si ya no es atendido, permanece en el sistema con su historial completo.</p>
+
+    <h3>¿Se puede editar una historia clínica?</h3>
+    <p><strong>No.</strong> Una vez registrada, la HC es inmutable. Las correcciones se hacen con Notas Aclaratorias.</p>
+
+    <h3>¿Qué pasa si el paciente ya fue atendido antes?</h3>
+    <p>Se crea una <strong>nueva historia clínica</strong> vinculada al mismo paciente. El sistema acumula todas las HC, sin sobrescribir las anteriores.</p>
+
+    <h3>¿Qué pasa si no hay internet?</h3>
+    <p>El sistema funciona offline y sincroniza cuando se recupera la conexión.</p>
+
+    <h3>¿Cómo se prepara para una auditoría?</h3>
+    <p>No se necesita preparación especial. Todo está registrado de forma permanente e inmutable. Solo busque al paciente por su documento y toda la información estará disponible.</p>
+  </div>
+
+  <!-- PIE -->
+  <div class="footer">
+    <p>Sistema de Gestión — Servicios de Ambulancia | M&H Partner Solutions S.A.S</p>
+    <p>Conforme con la Resolución 1995 de 1999 — Ministerio de Salud de Colombia</p>
+    <p>Documento generado en Marzo 2026</p>
+  </div>
+
+</body>
+</html>

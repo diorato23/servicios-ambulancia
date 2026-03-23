@@ -150,7 +150,25 @@ export default function NuevoPacientePage() {
               </div>
               <div className="form-group">
                 <label className="form-label">EPS</label>
-                <input name="eps" className="form-input" placeholder="Ej: Sura, Nueva EPS, Sanitas..." />
+                <select name="eps" className="form-select">
+                  <option value="">Seleccionar...</option>
+                  <option value="Nueva EPS">Nueva EPS</option>
+                  <option value="Sanitas">Sanitas</option>
+                  <option value="Sura">Sura</option>
+                  <option value="Salud Total">Salud Total</option>
+                  <option value="Compensar">Compensar</option>
+                  <option value="Famisanar">Famisanar</option>
+                  <option value="Coosalud">Coosalud</option>
+                  <option value="Mutual Ser">Mutual Ser</option>
+                  <option value="Comfenalco">Comfenalco</option>
+                  <option value="Coomeva">Coomeva</option>
+                  <option value="Cafesalud">Cafesalud</option>
+                  <option value="Capital Salud">Capital Salud</option>
+                  <option value="Medimás">Medimás</option>
+                  <option value="Aliansalud">Aliansalud</option>
+                  <option value="SOS">SOS</option>
+                  <option value="Otra">Otra</option>
+                </select>
               </div>
             </div>
             <div className="grid-2">
