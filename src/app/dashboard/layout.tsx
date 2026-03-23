@@ -3,8 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { signOut, onAuthStateChanged, User } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { useUserRole } from "@/lib/useUserRole";
+import { canAccess, rolLabels, rolColors, type Recurso } from "@/lib/roles";
 import {
   Users,
   ClipboardList,
@@ -15,39 +17,46 @@ import {
   LogOut,
   Menu,
   X,
+  Shield,
 } from "lucide-react";
 
 const MOBILE_BREAKPOINT = 768;
 
-const navItems = [
+const allNavItems = [
   {
     section: "Principal",
     links: [
-      { href: "/dashboard", label: "Panel Principal", icon: LayoutDashboard },
+      { href: "/dashboard", label: "Panel Principal", icon: LayoutDashboard, recurso: "panel" as Recurso },
     ],
   },
   {
     section: "Gestión Clínica",
     links: [
-      { href: "/dashboard/pacientes", label: "Pacientes", icon: Users },
-      { href: "/dashboard/ordenes", label: "Órdenes de Servicio", icon: ClipboardList },
-      { href: "/dashboard/historias", label: "Historias Clínicas", icon: FileText },
+      { href: "/dashboard/pacientes", label: "Pacientes", icon: Users, recurso: "pacientes" as Recurso },
+      { href: "/dashboard/ordenes", label: "Órdenes de Servicio", icon: ClipboardList, recurso: "ordenes" as Recurso },
+      { href: "/dashboard/historias", label: "Historias Clínicas", icon: FileText, recurso: "historias" as Recurso },
     ],
   },
   {
     section: "Operaciones",
     links: [
-      { href: "/dashboard/ambulancias", label: "Ambulancias", icon: Ambulance },
-      { href: "/dashboard/tripulantes", label: "Tripulantes", icon: UserCheck },
+      { href: "/dashboard/ambulancias", label: "Ambulancias", icon: Ambulance, recurso: "ambulancias" as Recurso },
+      { href: "/dashboard/tripulantes", label: "Tripulantes", icon: UserCheck, recurso: "tripulantes" as Recurso },
+    ],
+  },
+  {
+    section: "Administración",
+    links: [
+      { href: "/dashboard/admin/usuarios", label: "Gestión Usuarios", icon: Shield, recurso: "admin_usuarios" as Recurso },
     ],
   },
 ];
 
-const mobileNavLinks = [
-  { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
-  { href: "/dashboard/pacientes", label: "Pacientes", icon: Users },
-  { href: "/dashboard/ordenes", label: "Órdenes", icon: ClipboardList },
-  { href: "/dashboard/ambulancias", label: "Ambulancias", icon: Ambulance },
+const allMobileNavLinks = [
+  { href: "/dashboard", label: "Inicio", icon: LayoutDashboard, recurso: "panel" as Recurso },
+  { href: "/dashboard/pacientes", label: "Pacientes", icon: Users, recurso: "pacientes" as Recurso },
+  { href: "/dashboard/ordenes", label: "Órdenes", icon: ClipboardList, recurso: "ordenes" as Recurso },
+  { href: "/dashboard/ambulancias", label: "Ambulancias", icon: Ambulance, recurso: "ambulancias" as Recurso },
 ];
 
 export default function DashboardLayout({
@@ -60,15 +69,15 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const { user: currentUser, rol, loading: rolLoading } = useUserRole();
 
-  // Escutar mudanças de autenticação
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-    });
-    return () => unsubscribe();
-  }, []);
+  // Filtrar items de navegação pelo rol
+  const navItems = allNavItems.map(section => ({
+    ...section,
+    links: section.links.filter(link => canAccess(rol, link.recurso)),
+  })).filter(section => section.links.length > 0);
+
+  const mobileNavLinks = allMobileNavLinks.filter(link => canAccess(rol, link.recurso));
 
   // Detectar mobile por JS (mais confiável que CSS media queries com Turbopack)
   const checkMobile = useCallback(() => {
@@ -246,16 +255,31 @@ export default function DashboardLayout({
                 )}
               </div>
               <div style={{ overflow: "hidden", flex: 1 }}>
-                <p style={{
-                  color: "#fff",
-                  fontSize: "0.82rem",
-                  fontWeight: 600,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}>
-                  {currentUser.displayName || "Usuario"}
-                </p>
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <p style={{
+                    color: "#fff",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}>
+                    {currentUser.displayName || "Usuario"}
+                  </p>
+                  {rol && (
+                    <span style={{
+                      fontSize: "0.6rem",
+                      fontWeight: 700,
+                      padding: "1px 6px",
+                      borderRadius: 8,
+                      background: rolColors[rol].bg,
+                      color: rolColors[rol].text,
+                      whiteSpace: "nowrap",
+                    }}>
+                      {rolLabels[rol]}
+                    </span>
+                  )}
+                </div>
                 <p style={{
                   color: "var(--sidebar-text)",
                   fontSize: "0.68rem",

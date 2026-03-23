@@ -142,7 +142,7 @@
     <div class="badge">✅ Conforme con Resolución 1995 de 1999</div>
     <div class="info">
       <p><strong>Empresa:</strong> M&H Partner Solutions S.A.S</p>
-      <p><strong>Versión:</strong> 1.0 — Marzo 2026</p>
+      <p><strong>Versión:</strong> 2.0 — Marzo 2026</p>
       <p><strong>Clasificación:</strong> Documento interno</p>
     </div>
   </div>
@@ -154,6 +154,7 @@
     <li>Historias Clínicas APH — Inmutabilidad</li>
     <li>Notas Aclaratorias — Correcciones Legales</li>
     <li>Protección de Datos y Auditoría</li>
+    <li>Roles y Control de Acceso</li>
     <li>Funcionamiento Offline</li>
     <li>Seguridad del Sistema</li>
     <li>Módulos Operativos (Ambulancias, Tripulantes, Órdenes)</li>
@@ -314,8 +315,64 @@
     <p style="font-size: 11px; color: #888;">* Los pacientes pueden actualizarse, pero el tipo y número de documento no se pueden cambiar.</p>
   </div>
 
-  <!-- 5. OFFLINE -->
-  <h2>5. Funcionamiento Offline</h2>
+  <!-- 5. ROLES -->
+  <h2>5. Roles y Control de Acceso</h2>
+  <div class="section">
+    <h3>5.1 Marco Legal — Ley 1581 de 2012</h3>
+    <div class="highlight">
+      <strong>Ley 1581 de 2012 — Protección de Datos Personales:</strong><br>
+      Los datos clínicos son considerados <strong>datos sensibles</strong>. Su tratamiento requiere <strong>autorización expresa del titular</strong> y solo puede ser realizado por <strong>personal autorizado</strong>. El responsable del tratamiento debe implementar medidas de seguridad para evitar su acceso no autorizado, adulteración, pérdida, consulta o uso no autorizado.
+    </div>
+
+    <h3>5.2 Roles del Sistema</h3>
+    <p>El sistema implementa <strong>3 roles</strong> con permisos diferenciados para proteger los datos clínicos sensibles:</p>
+    <table>
+      <tr><th>Rol</th><th>Descripción</th><th>¿Quién lo usa?</th></tr>
+      <tr>
+        <td><span class="badge-inline" style="background:#fef3c7;color:#92400e;">🛡️ Administrador</span></td>
+        <td>Acceso total al sistema + gestión de usuarios y roles</td>
+        <td>Director de operaciones, gerente</td>
+      </tr>
+      <tr>
+        <td><span class="badge-inline" style="background:#dbeafe;color:#1e40af;">🩺 Médico / TPH</span></td>
+        <td>Acceso a pacientes completos, historias clínicas, signos vitales, notas aclaratorias</td>
+        <td>Médicos, tecnólogos en atención prehospitalaria, enfermeros</td>
+      </tr>
+      <tr>
+        <td><span class="badge-inline" style="background:#d1fae5;color:#065f46;">🚑 Conductor</span></td>
+        <td>Solo órdenes de servicio y ambulancias. <strong>No tiene acceso a datos clínicos</strong></td>
+        <td>Conductores de ambulancia</td>
+      </tr>
+    </table>
+
+    <h3>5.3 Matriz de Permisos por Módulo</h3>
+    <table>
+      <tr><th>Módulo</th><th>Admin</th><th>Médico</th><th>Conductor</th></tr>
+      <tr><td>Panel Principal</td><td>✅</td><td>✅</td><td>✅</td></tr>
+      <tr><td>Pacientes (datos completos)</td><td>✅</td><td>✅</td><td>❌</td></tr>
+      <tr><td>Historias Clínicas</td><td>✅</td><td>✅</td><td>❌</td></tr>
+      <tr><td>Notas Aclaratorias</td><td>✅</td><td>✅</td><td>❌</td></tr>
+      <tr><td>Órdenes de Servicio</td><td>✅</td><td>✅</td><td>✅</td></tr>
+      <tr><td>Ambulancias</td><td>✅</td><td>✅</td><td>✅</td></tr>
+      <tr><td>Tripulantes</td><td>✅</td><td>✅</td><td>❌</td></tr>
+      <tr><td>Gestión de Usuarios</td><td>✅</td><td>❌</td><td>❌</td></tr>
+    </table>
+
+    <h3>5.4 ¿Cómo funciona?</h3>
+    <ul>
+      <li>Cada usuario registrado tiene un <strong>rol asignado</strong> almacenado en la base de datos</li>
+      <li>El menú lateral (sidebar) muestra <strong>solo las opciones permitidas</strong> según el rol</li>
+      <li>Las reglas de seguridad de Firestore <strong>impiden el acceso directo</strong> a datos protegidos, incluso si alguien intenta saltar la interfaz</li>
+      <li>Solo el <strong>Administrador</strong> puede cambiar el rol de otros usuarios</li>
+    </ul>
+
+    <div class="danger">
+      <strong>⛔ IMPORTANTE:</strong> Un conductor que intente acceder a una historia clínica (por URL directa o manipulación) será <strong>bloqueado por las reglas de seguridad</strong> tanto a nivel de interfaz como a nivel de base de datos.
+    </div>
+  </div>
+
+  <!-- 6. OFFLINE -->
+  <h2>6. Funcionamiento Offline</h2>
   <div class="section">
     <p>El sistema está diseñado para operar en <strong>condiciones de conectividad limitada</strong>, ideal para ambulancias en zonas rurales o con señal inestable.</p>
 
@@ -330,8 +387,8 @@
 
   <div class="page-break"></div>
 
-  <!-- 6. SEGURIDAD -->
-  <h2>6. Seguridad del Sistema</h2>
+  <!-- 7. SEGURIDAD -->
+  <h2>7. Seguridad del Sistema</h2>
   <div class="section">
     <h3>6.1 Autenticación</h3>
     <ul>
@@ -344,8 +401,8 @@
     <p>Las reglas de seguridad se aplican directamente en <strong>Firebase/Firestore</strong>, lo que significa que incluso si alguien intentara acceder al banco de datos directamente (sin la aplicación), las restricciones de inmutabilidad y eliminación se mantienen.</p>
   </div>
 
-  <!-- 7. MÓDULOS -->
-  <h2>7. Módulos Operativos</h2>
+  <!-- 8. MÓDULOS -->
+  <h2>8. Módulos Operativos</h2>
   <div class="section">
     <table>
       <tr><th>Módulo</th><th>Crear</th><th>Editar</th><th>Eliminar</th><th>Descripción</th></tr>
@@ -357,8 +414,8 @@
     </table>
   </div>
 
-  <!-- 8. FAQ -->
-  <h2>8. Preguntas Frecuentes</h2>
+  <!-- 9. FAQ -->
+  <h2>9. Preguntas Frecuentes</h2>
   <div class="section">
     <h3>¿Se puede eliminar un paciente?</h3>
     <p><strong>No.</strong> Los datos del paciente son permanentes. Si ya no es atendido, permanece en el sistema con su historial completo.</p>
