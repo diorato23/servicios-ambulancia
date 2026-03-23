@@ -5,8 +5,7 @@ import { db } from "@/lib/firebase";
 import { doc, onSnapshot, collection, query, where, getCountFromServer } from "firebase/firestore";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Edit, FileText, ClipboardList } from "lucide-react";
-import { desactivarPaciente } from "../actions";
+import { ArrowLeft, FileText, ClipboardList, ShieldCheck } from "lucide-react";
 
 interface Paciente {
   id: string;
@@ -65,7 +64,7 @@ export default function DetallePacientePage() {
   const [paciente, setPaciente] = useState<Paciente | null>(null);
   const [historias, setHistorias] = useState(0);
   const [ordenes, setOrdenes] = useState(0);
-  const [desactivando, setDesactivando] = useState(false);
+
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "pacientes", id), (snap) => {
@@ -86,17 +85,7 @@ export default function DetallePacientePage() {
     return () => unsub();
   }, [id]);
 
-  async function handleDesactivar() {
-    if (!confirm("¿Desactivar este paciente? Sus datos e historial clínico se conservarán, pero no aparecerá en las listas activas.")) return;
-    setDesactivando(true);
-    const result = await desactivarPaciente(id, "admin");
-    if (result.error) {
-      alert(result.error);
-      setDesactivando(false);
-    } else {
-      router.push("/dashboard/pacientes");
-    }
-  }
+
 
   if (!paciente) {
     return (
@@ -120,13 +109,10 @@ export default function DetallePacientePage() {
             <div style={{ fontSize: "0.8rem", color: "var(--muted)", marginTop: 2 }}>{paciente.tipoDocumento} {paciente.numeroDocumento}</div>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={handleDesactivar} disabled={desactivando} className="btn btn-outline" style={{ color: "var(--warning)", borderColor: "var(--warning)" }}>
-            {desactivando ? "Desactivando..." : "Desactivar"}
-          </button>
-          <Link href={`/dashboard/pacientes/${id}/editar`} className="btn btn-primary">
-            <Edit size={15} /> Editar
-          </Link>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <span style={{ fontSize: "0.75rem", color: "var(--success)", display: "flex", alignItems: "center", gap: 4, fontWeight: 600 }}>
+            <ShieldCheck size={14} /> Registro protegido
+          </span>
         </div>
       </div>
 

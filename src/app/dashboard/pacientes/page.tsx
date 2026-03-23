@@ -269,13 +269,6 @@ export default function PacientesPage() {
                             >
                               Ver
                             </Link>
-                            <Link
-                              href={`/dashboard/pacientes/${p.id}/editar`}
-                              className="btn btn-outline"
-                              style={{ padding: "5px 12px", fontSize: "0.8rem" }}
-                            >
-                              Editar
-                            </Link>
                           </div>
                         </td>
                       </tr>
