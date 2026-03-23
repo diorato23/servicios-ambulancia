@@ -5,8 +5,7 @@ import { db } from "@/lib/firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Edit, Activity, Brain, Stethoscope, Clock } from "lucide-react";
-import { eliminarHistoriaClinica } from "../actions";
+import { ArrowLeft, Activity, Brain, Stethoscope, Clock, ShieldCheck } from "lucide-react";
 
 interface SignosVitales {
   presionArterial: string;
@@ -74,7 +73,6 @@ export default function DetalleHistoriaPage() {
   const router = useRouter();
   const id = params.id as string;
   const [hc, setHc] = useState<Historia | null>(null);
-  const [eliminando, setEliminando] = useState(false);
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "historias_clinicas", id), (snap) => {
@@ -83,13 +81,7 @@ export default function DetalleHistoriaPage() {
     return () => unsub();
   }, [id]);
 
-  async function handleEliminar() {
-    if (!confirm("¿Eliminar esta historia clínica? Esta acción no se puede deshacer.")) return;
-    setEliminando(true);
-    const result = await eliminarHistoriaClinica(id);
-    if (result.error) { alert(result.error); setEliminando(false); }
-    else router.push("/dashboard/historias");
-  }
+
 
   if (!hc) return <div className="page-content" style={{ textAlign: "center", paddingTop: 60, color: "var(--muted)" }}>Cargando...</div>;
 
@@ -112,9 +104,10 @@ export default function DetalleHistoriaPage() {
             <div style={{ fontSize: "0.8rem", color: "var(--muted)", marginTop: 2 }}>{hc.nombrePaciente}</div>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={handleEliminar} disabled={eliminando} className="btn btn-outline" style={{ color: "var(--danger)", borderColor: "var(--danger)" }}>{eliminando ? "Eliminando..." : "Eliminar"}</button>
-          <Link href={`/dashboard/historias/${id}/editar`} className="btn btn-primary"><Edit size={15} /> Editar</Link>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <span style={{ fontSize: "0.75rem", color: "var(--success)", display: "flex", alignItems: "center", gap: 4, fontWeight: 600 }}>
+            <ShieldCheck size={14} /> Registro inmutable
+          </span>
         </div>
       </div>
 

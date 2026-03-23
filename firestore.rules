@@ -1,0 +1,91 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ==================================================
+    // PACIENTES
+    // Solo usuarios autenticados. Nunca eliminar.
+    // El tipo y número de documento no pueden cambiar.
+    // ==================================================
+    match /pacientes/{pacienteId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+      allow update: if request.auth != null
+        // No se puede cambiar el tipo ni el número de documento
+        && request.resource.data.tipoDocumento == resource.data.tipoDocumento
+        && request.resource.data.numeroDocumento == resource.data.numeroDocumento;
+      // PROHIBIDO eliminar pacientes (Resolución 1995/99)
+      allow delete: if false;
+    }
+
+    // ==================================================
+    // HISTORIAS CLÍNICAS APH
+    // INMUTABLES — Solo crear y leer.
+    // No se permite editar ni eliminar (Resolución 1995/99).
+    // Las correcciones se hacen con Notas Aclaratorias.
+    // ==================================================
+    match /historias_clinicas/{hcId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+      // PROHIBIDO modificar o eliminar historias clínicas
+      allow update, delete: if false;
+    }
+
+    // ==================================================
+    // NOTAS ACLARATORIAS
+    // INMUTABLES — Solo crear y leer.
+    // Son el mecanismo legal para corregir errores
+    // en las historias clínicas.
+    // ==================================================
+    match /notas_aclaratorias/{notaId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+      // PROHIBIDO modificar o eliminar notas aclaratorias
+      allow update, delete: if false;
+    }
+
+    // ==================================================
+    // AUDITORÍA DE PACIENTES
+    // INMUTABLES — Solo crear y leer.
+    // Registra todas las modificaciones a datos de pacientes.
+    // ==================================================
+    match /paciente_auditoria/{logId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+      // PROHIBIDO modificar o eliminar logs de auditoría
+      allow update, delete: if false;
+    }
+
+    // ==================================================
+    // ORDENES DE SERVICIO
+    // CRUD completo para usuarios autenticados.
+    // ==================================================
+    match /ordenes_servicio/{osId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // ==================================================
+    // AMBULANCIAS
+    // CRUD completo para usuarios autenticados.
+    // ==================================================
+    match /ambulancias/{ambId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // ==================================================
+    // TRIPULANTES
+    // CRUD completo para usuarios autenticados.
+    // ==================================================
+    match /tripulantes/{tripId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // ==================================================
+    // ASIGNACIONES DE TRIPULACIÓN
+    // CRUD completo para usuarios autenticados.
+    // ==================================================
+    match /asignacion_tripulacion/{asigId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

@@ -149,7 +149,6 @@ export default function HistoriasPage() {
                       <td>
                         <div style={{ display: "flex", gap: 6 }}>
                           <Link href={`/dashboard/historias/${h.id}`} className="btn btn-outline" style={{ padding: "5px 12px", fontSize: "0.8rem" }}>Ver</Link>
-                          <Link href={`/dashboard/historias/${h.id}/editar`} className="btn btn-outline" style={{ padding: "5px 12px", fontSize: "0.8rem" }}>Editar</Link>
                         </div>
                       </td>
                     </tr>
