@@ -86,22 +86,22 @@ service cloud.firestore {
     }
 
     // ============================================
-    // ÓRDENES DE SERVICIO — todos los autenticados
+    // ÓRDENES DE SERVICIO
     // ============================================
     match /ordenes_servicio/{docId} {
       allow read: if isAuthenticated();
       allow create: if isMedicoOrAdmin();
-      allow update: if isAuthenticated();
+      allow update: if isMedicoOrAdmin();
       allow delete: if isAdmin();
     }
 
     // ============================================
-    // AMBULANCIAS — todos los autenticados
+    // AMBULANCIAS
     // ============================================
     match /ambulancias/{docId} {
       allow read: if isAuthenticated();
       allow create: if isAdmin();
-      allow update: if isAuthenticated();
+      allow update: if isMedicoOrAdmin();
       allow delete: if isAdmin();
     }
 

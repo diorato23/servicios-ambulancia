@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import Link from "next/link";
 import { ClipboardList, Plus, Search, AlertTriangle, Clock, CheckCircle } from "lucide-react";
+import { useUserRole } from "@/lib/useUserRole";
 
 interface Orden extends DocumentData {
   id: string;
@@ -50,6 +51,7 @@ export default function OrdenesPage() {
   const [filtroEstado, setFiltroEstado] = useState("");
   const [cargando, setCargando] = useState(true);
   const [offline, setOffline] = useState(false);
+  const { isConductor } = useUserRole();
 
   useEffect(() => {
     const handleOffline = () => setOffline(true);
@@ -120,9 +122,11 @@ export default function OrdenesPage() {
             Gestión de solicitudes de ambulancia
           </div>
         </div>
-        <Link href="/dashboard/ordenes/nueva" className="btn btn-primary">
-          <Plus size={15} /> Nueva Orden
-        </Link>
+        {!isConductor && (
+          <Link href="/dashboard/ordenes/nueva" className="btn btn-primary">
+            <Plus size={15} /> Nueva Orden
+          </Link>
+        )}
       </div>
 
       <div className="page-content">
@@ -231,7 +235,9 @@ export default function OrdenesPage() {
                       <td>
                         <div style={{ display: "flex", gap: 6 }}>
                           <Link href={`/dashboard/ordenes/${o.id}`} className="btn btn-outline" style={{ padding: "5px 12px", fontSize: "0.8rem" }}>Ver</Link>
-                          <Link href={`/dashboard/ordenes/${o.id}/editar`} className="btn btn-outline" style={{ padding: "5px 12px", fontSize: "0.8rem" }}>Editar</Link>
+                          {!isConductor && (
+                            <Link href={`/dashboard/ordenes/${o.id}/editar`} className="btn btn-outline" style={{ padding: "5px 12px", fontSize: "0.8rem" }}>Editar</Link>
+                          )}
                         </div>
                       </td>
                     </tr>

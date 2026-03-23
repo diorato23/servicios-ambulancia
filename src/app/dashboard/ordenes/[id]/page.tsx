@@ -7,6 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Edit, MapPin, Phone, User, Clock } from "lucide-react";
 import { eliminarOrden, actualizarEstadoOrden } from "../actions";
+import { useUserRole } from "@/lib/useUserRole";
 
 interface Orden {
   id: string;
@@ -54,6 +55,7 @@ export default function DetalleOrdenPage() {
   const [orden, setOrden] = useState<Orden | null>(null);
   const [eliminando, setEliminando] = useState(false);
   const [cambiandoEstado, setCambiandoEstado] = useState(false);
+  const { isConductor } = useUserRole();
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "ordenes_servicio", id), (snap) => {
@@ -89,12 +91,14 @@ export default function DetalleOrdenPage() {
             <div style={{ fontSize: "0.8rem", color: "var(--muted)", marginTop: 2 }}>{orden.tipoServicio} — {orden.prioridad}</div>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button onClick={handleEliminar} disabled={eliminando} className="btn btn-outline" style={{ color: "var(--danger)", borderColor: "var(--danger)" }}>
-            {eliminando ? "Eliminando..." : "Eliminar"}
-          </button>
-          <Link href={`/dashboard/ordenes/${id}/editar`} className="btn btn-primary"><Edit size={15} /> Editar</Link>
-        </div>
+        {!isConductor && (
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={handleEliminar} disabled={eliminando} className="btn btn-outline" style={{ color: "var(--danger)", borderColor: "var(--danger)" }}>
+              {eliminando ? "Eliminando..." : "Eliminar"}
+            </button>
+            <Link href={`/dashboard/ordenes/${id}/editar`} className="btn btn-primary"><Edit size={15} /> Editar</Link>
+          </div>
+        )}
       </div>
 
       <div className="page-content">
@@ -106,7 +110,7 @@ export default function DetalleOrdenPage() {
               <button
                 key={e}
                 onClick={() => handleCambiarEstado(e)}
-                disabled={cambiandoEstado || orden.estadoOS === e}
+                disabled={isConductor || cambiandoEstado || orden.estadoOS === e}
                 className="btn"
                 style={{
                   background: orden.estadoOS === e ? estadoColor[e] : "transparent",
