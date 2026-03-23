@@ -1,7 +1,8 @@
 import { initializeApp, getApps, FirebaseApp } from "firebase/app";
 import {
-  getFirestore,
-  enableIndexedDbPersistence,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
   Firestore,
 } from "firebase/firestore";
 import { getAuth, Auth } from "firebase/auth";
@@ -22,26 +23,21 @@ let auth: Auth;
 
 if (!getApps().length) {
   app = initializeApp(firebaseConfig);
+  // ✅ OFFLINE PERSISTENCE — funciona sem internet (API moderna)
+  // Os dados são cacheados no IndexedDB do dispositivo
+  // Quando a internet volta, tudo sincroniza automaticamente
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager(),
+    }),
+  });
 } else {
   app = getApps()[0];
+  // Firestore já foi inicializado com cache — reusar instância
+  const { getFirestore } = require("firebase/firestore");
+  db = getFirestore(app);
 }
 
-db = getFirestore(app);
 auth = getAuth(app);
-
-// ✅ OFFLINE PERSISTENCE — funciona sem internet
-// Os dados são cacheados no IndexedDB do dispositivo
-// Quando a internet volta, tudo sincroniza automaticamente
-if (typeof window !== "undefined") {
-  enableIndexedDbPersistence(db).catch((err) => {
-    if (err.code === "failed-precondition") {
-      // Múltiplas abas abertas — apenas uma pode ter persistência
-      console.warn("[Firebase] Persistência offline: múltiplas abas detectadas");
-    } else if (err.code === "unimplemented") {
-      // Navegador não suporta IndexedDB (raro)
-      console.warn("[Firebase] Persistência offline não suportada neste navegador");
-    }
-  });
-}
 
 export { db, auth };

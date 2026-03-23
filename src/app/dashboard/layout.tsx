@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { signOut, onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import {
   Users,
   ClipboardList,
@@ -54,8 +56,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  // Escutar mudanças de autenticação
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Detectar mobile por JS (mais confiável que CSS media queries com Turbopack)
   const checkMobile = useCallback(() => {
@@ -196,11 +209,87 @@ export default function DashboardLayout({
           ))}
         </nav>
 
-        <div style={{ padding: "12px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-          <button className="sidebar-link" style={{ width: "100%", background: "none", border: "none" }}>
-            <LogOut size={17} />
-            Cerrar Sesión
-          </button>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+          {/* Perfil do usuário */}
+          {currentUser && (
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "14px 16px 10px",
+            }}>
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+                fontSize: "0.85rem",
+                fontWeight: 700,
+                flexShrink: 0,
+                overflow: "hidden",
+              }}>
+                {currentUser.photoURL ? (
+                  <img
+                    src={currentUser.photoURL}
+                    alt="avatar"
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  (currentUser.displayName || currentUser.email || "U")
+                    .charAt(0)
+                    .toUpperCase()
+                )}
+              </div>
+              <div style={{ overflow: "hidden", flex: 1 }}>
+                <p style={{
+                  color: "#fff",
+                  fontSize: "0.82rem",
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}>
+                  {currentUser.displayName || "Usuario"}
+                </p>
+                <p style={{
+                  color: "var(--sidebar-text)",
+                  fontSize: "0.68rem",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  marginTop: 1,
+                }}>
+                  {currentUser.email}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Botão Cerrar Sesión */}
+          <div style={{ padding: "4px 12px 12px" }}>
+            <button
+              className="sidebar-link"
+              style={{ width: "100%", background: "none", border: "none" }}
+              disabled={loggingOut}
+              onClick={async () => {
+                setLoggingOut(true);
+                try {
+                  await signOut(auth);
+                  router.push("/login");
+                } catch {
+                  setLoggingOut(false);
+                }
+              }}
+            >
+              <LogOut size={17} />
+              {loggingOut ? "Cerrando..." : "Cerrar Sesión"}
+            </button>
+          </div>
         </div>
       </aside>
 
