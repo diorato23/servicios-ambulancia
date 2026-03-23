@@ -71,6 +71,7 @@ export default function NuevaHistoriaPage() {
     formData.set("glasgow_ocular", String(gOcular));
     formData.set("glasgow_verbal", String(gVerbal));
     formData.set("glasgow_motor", String(gMotor));
+    formData.set("fecha_hora_cierre", new Date().toISOString().slice(0, 16));
     const result = await crearHistoriaClinica(formData);
     if (result.error) { setError(result.error); setPending(false); }
     else router.push("/dashboard/historias");
@@ -119,11 +120,11 @@ export default function NuevaHistoriaPage() {
           {/* 2. Tiempos */}
           <div className="card" style={{ marginBottom: 20 }}>
             <h3 style={{ fontWeight: 700, fontSize: "0.95rem", marginBottom: 20, paddingBottom: 12, borderBottom: "1px solid var(--border)" }}>Tiempos de Atención</h3>
-            <div className="grid-3">
+            <div className="grid-2">
               <div className="form-group"><label className="form-label">Llegada a Escena</label><input name="fecha_hora_llegada" type="datetime-local" className="form-input" defaultValue={new Date().toISOString().slice(0, 16)} /></div>
               <div className="form-group"><label className="form-label">Inicio Atención</label><input name="fecha_hora_atencion" type="datetime-local" className="form-input" defaultValue={new Date().toISOString().slice(0, 16)} /></div>
-              <div className="form-group"><label className="form-label">Cierre Historia</label><input name="fecha_hora_cierre" type="datetime-local" className="form-input" /></div>
             </div>
+            <div style={{ fontSize: "0.78rem", color: "var(--muted)", marginTop: 8, fontStyle: "italic" }}>⏱️ El cierre se registra automáticamente al guardar la historia.</div>
           </div>
 
           {/* 3. Motivo y Enfermedad */}
