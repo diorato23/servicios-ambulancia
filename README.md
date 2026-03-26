@@ -1,1 +1,53 @@
-IyDwn6SRIFNlcnZpY2lvcy1BbWJ1bGFuY2lhIC0tLSBDUk0gQ2zDrW5pY28KCj4gU2lzdGVtYSBkZSBnZXN0w6NvIGRlIGZyb3RhIGRlIGFtYnVsw6JuY2lhcywgcGFjaWVudGVzIGUgZW1lcmfDqm5jaWFzLiBQYXJhIGNsw61uaWNhcyBlIG9wZXJhZG9yYXMgZGUgc2HDode5ZGUuCgotLS0KCiMjIPCfj4UgUGFyYSBxdWVtIG7Do28gw6kgdMOpY25pY28KCioqTyBxdWUgZXN0ZSBzaXN0ZW1hIGZhejoqKgotIEdlcmVuY2lhIHVtYSBmcm90YSBkZSBhbWJ1bMOibmNpYXMgZW0gdGVtcG8gcmVhbCBubyBtYXBhCi0gQ29udHJvbGEgb3MgcGFjaWVudGVzIGUgaGlzdMOzcmljbyBtw6lkaWNvIChBUEgpCi0gUmVnaXN0cmEgY2hhbWFkYXMgZGUgZW1lcmfDqm5jaWEgZSBkZXNpZ25hIGEgYW1idWzDom5jaWEgbWFpcyBwcsOzeGltYQotIEdlcmVuY2lhIHRyaXB1bGFudGVzIGUgc3VhcyBlc2NhbGFzCgoqKlF1ZW0gdXNhOioqCi0gT3BlcmFkb3JlcyBkZSBjZW50cmFsIHF1ZSBkZXNwYWNoYW0gYW1idWzDom5jaWFzCi0gUGFyYW3DqWRpY29zIHF1ZSByZWdpc3RyYW0gZGFkb3MgZG8gcGFjaWVudGUgbm8gY2FtcG8KLSBHZXN0b3JlcyBxdWUgYWNvbXBhbmhhbSBwZXJmb3JtYW5jZSBkYSBmcm90YQoKLS0tCgojIyDwn5O4IFByZXZpZXcgZG8gU2lzdGVtYQoKIVtQcmV2aWV3IFNlcnZpY2lvcy1BbWJ1bGFuY2lhXShwcmV2aWV3LnBuZykKCi0tLQoKIyMg4pyFIEZ1bmNpb25hbGlkYWRlcwoKLSBSYXN0cmVhbWVudG8gR1BTIGVtIHRlbXBvIHJlYWwgZGFzIGFtYnVsw6JuY2lhcwotIEdlc3TDo28gZGUgY2hhbWFkYXMgZGUgZW1lcmfDqm5jaWEgYXRpdmFzCi0gRmljaGEgY2zDrW5pY2EgZG8gcGFjaWVudGUgKHNpbmFpcyB2aXRhaXMsIGhpc3TDs3JpY28pCi0gT3JkZW5zIGRlIHNlcnZpw6dvIHBvciBhdGVuZGltZW50bwotIEdlc3TDo28gZGUgdHJpcHVsYW50ZXMgZSBlc2NhbGFzCi0gUmVsYXTDs3Jpb3MgZGUgYXRlbmRpbWVudG8KCi0tLQoKIyMg8J+bsyBTdGFjayBUw6luaWNhCgp8IFRlY25vbG9naWEgfCBVc28gfAp8LS0tLS0tLS0tLS18LS0tLS18CnwgTmV4dC5qcyAxNSB8IEZyb250ZW5kIHdlYiAoUFdBKSB8CnwgU3VwYWJhc2UgfCBCYW5jbyBkZSBkYWRvcyArIFJlYWx0aW1lICsgQXV0aCB8CnwgR29vZ2xlIE1hcHMgQVBJIHwgUmFzdHJlYW1lbnRvIEdQUyB8CnwgVGFpbHdpbmQgQ1NTIHwgSW50ZXJmYWNlIHwKfCBUeXBlU2NyaXB0IHwgVGlwYWdlbSB8CgotLS0KCiMjIPCfk6wgQ29udGF0bwoKRGVzZW52b2x2aWRvIHBvciAqKkRpb3JhbiBSb2Ryw61ndWV6KiogwrcgZGlvcmF0b0BsaXZlLmNvbQo=
+﻿# Servicios-Ambulancia - CRM Clinico
+
+> Sistema de gestao de frota de ambulancias, pacientes e emergencias. Para clinicas e operadoras de saude.
+
+---
+
+## Para quem nao e tecnico
+
+**O que este sistema faz:**
+- Gerencia uma frota de ambulancias em tempo real no mapa
+- Controla os pacientes e historico medico (APH)
+- Registra chamadas de emergencia e designa a ambulancia mais proxima
+- Gerencia tripulantes e suas escalas
+
+**Quem usa:**
+- Operadores de central que despachavam ambulancias
+- Paramedicos que registram dados do paciente no campo
+- Gestores que acompanham performance da frota
+
+---
+
+## Preview do Sistema
+
+![Preview Servicios-Ambulancia](preview.png)
+
+---
+
+## Funcionalidades
+
+- Rastreamento GPS em tempo real das ambulancias
+- Gestao de chamadas de emergencia ativas
+- Ficha clinica do paciente (sinais vitais, historico)
+- Ordens de servico por atendimento
+- Gestao de tripulantes e escalas
+- Relatorios de atendimento
+
+---
+
+## Stack Tecnica
+
+| Tecnologia | Uso |
+|-----------|-----|
+| Next.js 15 | Frontend web (PWA) |
+| Supabase | Banco de dados + Realtime + Auth |
+| Google Maps API | Rastreamento GPS |
+| Tailwind CSS | Interface |
+| TypeScript | Tipagem |
+
+---
+
+## Contato
+
+Desenvolvido por **Dioran Rodriguez** - diorato@live.com
